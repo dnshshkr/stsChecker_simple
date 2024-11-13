@@ -9,17 +9,18 @@ begin_setRGB:
     for (uint8_t j = 0; j < chSize; j++)
       valsDict[i][j] = ylwDict[ch][i][j];
   }
-  Serial.print("[Settings/Channel "), Serial.print(ch), Serial.println("]");
-  Serial.print("LR: "), Serial.println(valsDict[1][0]);
-  Serial.print("HR: "), Serial.println(valsDict[1][1]);
-  Serial.print("LG: "), Serial.println(valsDict[1][2]);
-  Serial.print("HG: "), Serial.println(valsDict[1][3]);
-  Serial.print("LB: "), Serial.println(valsDict[1][4]);
-  Serial.print("HB: "), Serial.println(valsDict[1][5]);
-  Serial.print("C: Self-calibrate"), sensorInitialized ? Serial.println() : Serial.println(" (disallowed)");
-  Serial.println("S: Back");
+  Serial.print(F("[Settings/Channel ")), Serial.print(ch + 1), Serial.println(F("]"));
+  Serial.print(F("LR: ")), Serial.println(valsDict[1][0]);
+  Serial.print(F("HR: ")), Serial.println(valsDict[1][1]);
+  Serial.print(F("LG: ")), Serial.println(valsDict[1][2]);
+  Serial.print(F("HG: ")), Serial.println(valsDict[1][3]);
+  Serial.print(F("LB: ")), Serial.println(valsDict[1][4]);
+  Serial.print(F("HB: ")), Serial.println(valsDict[1][5]);
+  if (sensorInitialized)
+    Serial.println(F("C: Self-calibrate"));
+  Serial.println(F("S: Back"));
 waitCmd_setRGB:
-  Serial.print("Selection: ");
+  Serial.print(F("Selection: "));
   while (!Serial.available());
   String color = Serial.readStringUntil('\n');
   Serial.println(color);
@@ -32,7 +33,7 @@ waitCmd_setRGB:
     }
   }
   if (!isValid) {
-    Serial.println("Invalid");
+    Serial.println(F("Invalid"));
     goto waitCmd_setRGB;
   }
   if (color == validCmd[0]) //  S
@@ -43,34 +44,20 @@ waitCmd_setRGB:
       goto begin_setRGB;
     }
     else {
-      Serial.println("Disallowed");
+      Serial.println(F("Invalid"));
       goto waitCmd_setRGB;
     }
   }
   uint8_t minVal, maxVal;
   getMinMax(valsDict[1], color, minVal, maxVal);
   int val;
-  /*bool outOfRange;
-    do {
-    Serial.print("Insert value for " + color + " ("), Serial.print(minVal), Serial.print("-"), Serial.print(maxVal), Serial.print("): ");
-    while (!Serial.available());
-    val = Serial.readStringUntil('\n').toInt();
-    flushSerial();
-    Serial.println(val);
-    if (val < minVal || val > maxVal) {
-      outOfRange = true;
-      Serial.println("Out of range");
-    }
-    else
-      outOfRange = false;
-    } while (outOfRange);*/
   while (true) {
-    Serial.print("Insert value for " + color + " ("), Serial.print(minVal), Serial.print("-"), Serial.print(maxVal), Serial.print("): ");
+    Serial.print(F("Insert value for ")), Serial.print(color), Serial.print(F(" (")), Serial.print(minVal), Serial.print(F("-")), Serial.print(maxVal), Serial.print(F("): "));
     while (!Serial.available());
     val = Serial.readStringUntil('\n').toInt();
     Serial.println(val);
     if (val < minVal || val > maxVal) {
-      Serial.println("Out of range");
+      Serial.println(F("Out of range"));
       continue;
     }
     else

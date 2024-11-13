@@ -6,23 +6,19 @@
 #define chPin 7
 #define chSize 6
 #define relayTypeAddr 0
-#define baudRateAddr 1
-#define integTimeAddr 2
-#define gainAddr 3
-Adafruit_TCS34725 tcs = Adafruit_TCS34725();
-//const uint8_t ylwAddrsCh1[chSize] = {4, 5, 6, 7, 8, 9}, ylwAddrsCh2[chSize] = {10, 11, 12, 13, 14, 15};
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 const uint8_t rPin = A0, gPin = A1, bPin = A2;
 bool relayType;
 uint8_t r, g, b;
 uint8_t ylwDict[2][2][chSize] = {
   //  channel 1
   {
-    {4, 5, 6, 7, 8, 9}, //  addresses of channel 1
+    {1, 2, 3, 4, 5, 6}, //  addresses of channel 1
     {} //  values of channel 1
   },
   //  channel 2
   {
-    {10, 11, 12, 13, 14, 15}, //  addresses of channel 2
+    {7, 8, 9, 10, 11, 12}, //  addresses of channel 2
     {} //  values of channel 2
   }
 };
@@ -37,13 +33,8 @@ void setup() {
   pinMode(bPin, OUTPUT);
   getVals();
   relayType = EEPROM.read(relayTypeAddr);
-  Serial.begin(getBaudRate(EEPROM.read(baudRateAddr)));
+  Serial.begin(115200);
   printInfo();
-  setIntegTime(EEPROM.read(integTimeAddr));
-  setGain(EEPROM.read(gainAddr));
-  //  float integTime = getIntegTime(EEPROM.read(integTimeAddr));
-  //  uint8_t gain = getGain(EEPROM.read(gainAddr));
-  //  Serial.print("Integration Time: "), Serial.print(integTime), Serial.print(" ms, Gain: "), Serial.print(gain), Serial.println("x");
   initSensor();
 }
 void loop() {
@@ -92,7 +83,7 @@ bool checkConnection() {
   if (res)
     return true;
   else {
-    Serial.println("Sensor disconnected");
+    Serial.println(F("Sensor disconnected"));
     return false;
   }
 }
@@ -103,11 +94,11 @@ void getVals() {
   }
 }
 void printInfo() {
-  Serial.print("STS Checker Ver. "), Serial.println(VERSION);
-  Serial.println("Copyright(C) Delloyd R&D (M) Sdn Bhd");
+  Serial.print(F("STS Checker Ver. ")), Serial.println(VERSION);
+  Serial.println(F("Copyright(C) Delloyd R&D (M) Sdn Bhd"));
 }
 void reboot() {
-  Serial.println("Rebooting...");
+  Serial.println(F("Rebooting..."));
   delay(100);
   resMcu();
 }

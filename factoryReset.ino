@@ -1,5 +1,5 @@
 bool factoryReset() {
-  Serial.print("[Settings/Factory Reset]\nProceed? (Y): ");
+  Serial.print(F("[Settings/Factory Reset]\nProceed? (Y): "));
   int8_t cd = 11;
   char choice;
   unsigned long prevmillis;
@@ -8,7 +8,7 @@ bool factoryReset() {
     {
       cd--;
       if (cd >= 0)
-        Serial.print(cd), Serial.print(" ");
+        Serial.print(cd), Serial.print(' ');
       prevmillis = millis();
     }
   } while (!Serial.available() && cd >= 0);
@@ -18,12 +18,12 @@ bool factoryReset() {
     choice = 'N';
   Serial.println();
   if (choice != 'Y') {
-    Serial.println("Aborted");
+    Serial.println(F("Aborted"));
     return false;
   }
-  Serial.print("Clearing "), Serial.print(EEPROM.length()), Serial.println(" bytes...");
+  Serial.print(F("Clearing ")), Serial.print(EEPROM.length()), Serial.println(F(" bytes..."));
   for (uint32_t i = 0; i < EEPROM.length(); i++)
     EEPROM.update(i, 255);
-  Serial.println("Done");
+  Serial.println(F("Done"));
   return true;
 }
