@@ -16,8 +16,7 @@ begin_setRGB:
   Serial.print(F("HG: ")), Serial.println(valsDict[1][3]);
   Serial.print(F("LB: ")), Serial.println(valsDict[1][4]);
   Serial.print(F("HB: ")), Serial.println(valsDict[1][5]);
-  if (sensorInitialized)
-    Serial.println(F("C: Self-calibrate"));
+  Serial.println(F("C: Self-calibrate"));
   Serial.println(F("S: Back"));
 waitCmd_setRGB:
   Serial.print(F("Selection: "));
@@ -44,7 +43,7 @@ waitCmd_setRGB:
       goto begin_setRGB;
     }
     else {
-      Serial.println(F("Invalid"));
+      Serial.println(F("Sensor is not initialized, unable to calibrate"));
       goto waitCmd_setRGB;
     }
   }

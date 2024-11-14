@@ -1,4 +1,4 @@
-#define VERSION "4.0"
+#define VERSION "4.1"
 #include <EEPROM.h>
 #include "Adafruit_TCS34725.h"
 #define ylwPin 5
