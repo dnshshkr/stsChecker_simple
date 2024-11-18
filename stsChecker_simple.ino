@@ -1,4 +1,4 @@
-#define VERSION "4.1"
+#define VERSION "4.3"
 #include <EEPROM.h>
 #include "Adafruit_TCS34725.h"
 #define ylwPin 5
@@ -6,6 +6,18 @@
 #define chPin 7
 #define chSize 6
 #define relayTypeAddr 0
+#define lrCh1Addr 1
+#define hrCh1Addr 2
+#define lgCh1Addr 3
+#define hgCh1Addr 4
+#define lbCh1Addr 5
+#define hbCh1Addr 6
+#define lrCh2Addr 7
+#define hrCh2Addr 8
+#define lgCh2Addr 9
+#define hgCh2Addr 10
+#define lbCh2Addr 11
+#define hbCh2Addr 12
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 const uint8_t rPin = A0, gPin = A1, bPin = A2;
 bool relayType;
@@ -13,13 +25,13 @@ uint8_t r, g, b;
 uint8_t ylwDict[2][2][chSize] = {
   //  channel 1
   {
-    {1, 2, 3, 4, 5, 6}, //  addresses of channel 1
-    {} //  values of channel 1
+    { lrCh1Addr, hrCh1Addr, lgCh1Addr, hgCh1Addr, lbCh1Addr, hbCh1Addr },  //  addresses of channel 1
+    {}                                                                     //  values of channel 1
   },
   //  channel 2
   {
-    {7, 8, 9, 10, 11, 12}, //  addresses of channel 2
-    {} //  values of channel 2
+    { lrCh2Addr, hrCh2Addr, lgCh2Addr, hgCh2Addr, lbCh2Addr, hbCh2Addr },  //  addresses of channel 2
+    {}                                                                     //  values of channel 2
   }
 };
 float fr, fg, fb;
@@ -59,19 +71,16 @@ void loop() {
   analogWrite(rPin, r);
   analogWrite(gPin, g);
   analogWrite(bPin, b);
-  //  reads channel (LOW for channel 1, HIGH for channel 2)
-  bool ch = digitalRead(chPin);
+  //  reads channel (HIGH for channel 1, LOW for channel 2)
+  bool ch = !digitalRead(chPin);
   Serial.print("Channel ");
   ch ? Serial.println(1) : Serial.println(2);
   Serial.print("R: "), Serial.print(r), Serial.print("\tG: "), Serial.print(g), Serial.print("\tB: "), Serial.print(b), Serial.println();
   //  matches read RGB data with stored RGB data on either channels
-  //  if ((ch == HIGH && r >= ylwDict[0][1][0] && r <= ylwDict[0][1][1] && g >= ylwDict[0][1][2] && g <= ylwDict[0][1][3] && b >= ylwDict[0][1][4] && b <= ylwDict[0][1][5]) ||
-  //      (ch == LOW && r >= ylwDict[1][1][0] && r <= ylwDict[1][1][1] && g >= ylwDict[1][1][2] && g <= ylwDict[1][1][3] && b >= ylwDict[1][1][4] && b <= ylwDict[1][1][5])) {
-  if (r >= ylwDict[!ch][1][0] && r <= ylwDict[!ch][1][1] && g >= ylwDict[!ch][1][2] && g <= ylwDict[!ch][1][3] && b >= ylwDict[!ch][1][4] && b <= ylwDict[!ch][1][5]) {
+  if (r >= ylwDict[ch][1][0] && r <= ylwDict[ch][1][1] && g >= ylwDict[ch][1][2] && g <= ylwDict[ch][1][3] && b >= ylwDict[ch][1][4] && b <= ylwDict[ch][1][5]) {
     Serial.println("Yellow");
     relayType ? digitalWrite(ylwPin, HIGH) : digitalWrite(ylwPin, LOW);
-  }
-  else {
+  } else {
     Serial.println("None");
     relayType ? digitalWrite(ylwPin, LOW) : digitalWrite(ylwPin, HIGH);
   }
@@ -83,7 +92,7 @@ bool checkConnection() {
   if (res)
     return true;
   else {
-    Serial.println(F("Sensor disconnected"));
+    Serial.println(F("Sensor disconnected."));
     return false;
   }
 }
@@ -107,8 +116,7 @@ void turnOffOutputs() {
   if (relayType) {
     digitalWrite(runPin, LOW);
     digitalWrite(ylwPin, LOW);
-  }
-  else {
+  } else {
     digitalWrite(runPin, HIGH);
     digitalWrite(ylwPin, HIGH);
   }

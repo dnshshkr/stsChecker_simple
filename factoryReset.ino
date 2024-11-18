@@ -4,8 +4,7 @@ bool factoryReset() {
   char choice;
   unsigned long prevmillis;
   do {
-    if (millis() - prevmillis >= 1000)
-    {
+    if (millis() - prevmillis >= 1000) {
       cd--;
       if (cd >= 0)
         Serial.print(cd), Serial.print(' ');
@@ -18,12 +17,12 @@ bool factoryReset() {
     choice = 'N';
   Serial.println();
   if (choice != 'Y') {
-    Serial.println(F("Aborted"));
+    Serial.println(F("Aborted."));
     return false;
   }
   Serial.print(F("Clearing ")), Serial.print(EEPROM.length()), Serial.println(F(" bytes..."));
   for (uint32_t i = 0; i < EEPROM.length(); i++)
     EEPROM.update(i, 255);
-  Serial.println(F("Done"));
+  Serial.println(F("Done."));
   return true;
 }
