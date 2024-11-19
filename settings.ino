@@ -3,7 +3,14 @@ begin_settings:
   printInfo();
   Serial.print(F("[Settings]\n1: Channel 1\n2: Channel 2\n3: Relay Type: Active "));
   relayType ? Serial.println(F("HIGH")) : Serial.println(F("LOW"));
-  Serial.println(F("4: Reboot\n5: Factory Reset\nS: Exit\nTips: Attach an RGB LED to pins A0(R), A1(G), A2(B) to see color reproduction."));
+  Serial.print(F("4: Reproduce Color: "));
+  repClr ? Serial.println(F("YES")) : Serial.println(F("NO"));
+  if (repClr) {
+    Serial.print(F("5: RGB LED Common Pin: "));
+    rgbCom ? Serial.println(F("Anode")) : Serial.println(F("Cathode"));
+  }
+  Serial.print(F("R: Reboot\nF: Factory Reset\nS: Exit"));
+  repClr ? Serial.println(F("\nTips: Attach an RGB LED to pins A0(R), A1(G), A2(B) to see color reproduction.")) : Serial.println();
 waitCmd_settings:
   Serial.print(F("Selection: "));
   while (!Serial.available())
@@ -25,8 +32,25 @@ waitCmd_settings:
         break;
       }
     case '4':
-      reboot();
+      {
+        repClr = !repClr;
+        EEPROM.update(repClrAddr, repClr);
+        break;
+      }
     case '5':
+      {
+        if (!repClr)
+          goto defaultLabel;
+        rgbCom = !rgbCom;
+        EEPROM.update(rgbComAddr, rgbCom);
+        generateGammatable();
+        break;
+      }
+    case 'R':
+    case 'r':
+      reboot();
+    case 'F':
+    case 'f':
       {
         if (factoryReset())
           reboot();
@@ -36,6 +60,7 @@ waitCmd_settings:
     case 'S':
     case 's':
       return;
+defaultLabel:
     default:
       {
         Serial.println(F("Invalid"));

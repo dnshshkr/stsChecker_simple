@@ -5,7 +5,7 @@ void initSensor() {
   Serial.println(F("Setting up sensor..."));
   bool sensorInit = tcs.begin();
   while (!sensorInit) {
-    relayType ? digitalWrite(ylwPin, LOW) : digitalWrite(ylwPin, HIGH);
+    // digitalWrite(detPin, !relayType);
     if (Serial.available()) {
       char cmd = Serial.readStringUntil('\n').charAt(0);
       if (toupper(cmd) == 'S') {
@@ -24,6 +24,6 @@ void initSensor() {
     }
   }
   Serial.println(F("Sensor ready."));
-  relayType ? digitalWrite(runPin, HIGH) : digitalWrite(runPin, LOW);
-  digitalWrite(LED_BUILTIN, HIGH);
+  // digitalWrite(runPin, relayType);
+  // digitalWrite(LED_BUILTIN, HIGH);
 }

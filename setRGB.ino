@@ -7,7 +7,7 @@ begin_setRGB:
   getVals();
   for (uint8_t i = 0; i < 2; i++) {
     for (uint8_t j = 0; j < chSize; j++)
-      valsDict[i][j] = ylwDict[ch][i][j];
+      valsDict[i][j] = rgbDict[ch][i][j];
   }
   Serial.print(F("[Settings/Channel ")), Serial.print(ch + 1), Serial.println(F("]"));
   Serial.print(F("LR: ")), Serial.println(valsDict[1][0]);
